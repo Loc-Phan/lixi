@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { message, Checkbox } from "antd";
+import { useAuth } from "@/provider/auth";
 
 const SignUp = () => {
+  const { onSignUp } = useAuth();
+  const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -31,9 +34,18 @@ const SignUp = () => {
     return true;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!validate()) {
       return;
+    }
+    try {
+      const res = await onSignUp({ fullName: name, phone, address, password });
+      if (res) {
+        navigate("/");
+      }
+    } catch (e) {
+      message.error(e?.response?.data?.details || "Something error!");
     }
   };
 
@@ -94,7 +106,10 @@ const SignUp = () => {
               />
             </div>
             <div className="mt-4">
-              <Checkbox value={check} onChange={(e) => setCheck(e.target.value)}>
+              <Checkbox
+                value={check}
+                onChange={(e) => setCheck(e.target.value)}
+              >
                 Đồng ý với chính sách của chúng tôi
               </Checkbox>
             </div>
