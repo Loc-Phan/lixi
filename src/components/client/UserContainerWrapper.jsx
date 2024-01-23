@@ -61,7 +61,7 @@ const UserContainerWrapper = () => {
   ];
 
   useEffect(() => {
-    if (!token) {
+    if (!token && location.pathname !== "/") {
       navigate("/sign-in");
     } else {
       (async () => {

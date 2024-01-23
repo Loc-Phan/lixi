@@ -15,8 +15,13 @@ const Home = () => {
   const [activeVoucher, setActiveVoucher] = useState();
   const { user, setUser } = useAuth();
   const [activeEnvelopes, setActiveEnvelopes] = useState([]);
+  const token = getItem("token");
 
   const openEnvelope = async (id) => {
+    if(!token) {
+      navigate("/sign-in");
+      return;
+    }
     try {
       const payload = {
         ownerId: user?.ownerId,
@@ -76,7 +81,7 @@ const Home = () => {
         const payload = {
           page: 1,
           limit: 8,
-          ownerId: user?.ownerId,
+          ownerId: user?.ownerId || "65ab44cacf906f1e618f4a6e",
         };
         const res = await api.get("/envelopes", { params: payload });
         if (res && res?.data) {
