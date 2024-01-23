@@ -3,6 +3,7 @@ import { api } from "@/provider/api";
 import { useAuth } from "@/provider/auth";
 import { Dropdown, Select, message } from "antd";
 import { useEffect, useState } from "react";
+import { useDebounce } from 'use-debounce';
 
 const columns = (onUpdateReward) => [
   {
@@ -63,6 +64,8 @@ const OrderManagement = () => {
   const [total, setTotal] = useState(0);
   const [data, setData] = useState([]);
   const [refreshDate, setRefreshData] = useState(new Date().getTime());
+  const [search,setSearch] = useState("");
+  const [debounceSearch] = useDebounce(search, 500);
 
   const onUpdateReward = async (item) => {
     if (!item?.isUsed) {
@@ -96,6 +99,7 @@ const OrderManagement = () => {
           ownerId: user?.ownerId,
           page,
           limit: pageSize,
+          phoneNumber: debounceSearch,
         };
         const res = await api.get("/envelopes/search/rewards", {
           params: payload,
@@ -118,7 +122,7 @@ const OrderManagement = () => {
         console.log(e);
       }
     })();
-  }, [page, pageSize, refreshDate, user?.ownerId]);
+  }, [page, pageSize, refreshDate, user?.ownerId, debounceSearch]);
 
   return (
     <div className="w-full container md:pr-10 xl:pr-20">
@@ -141,6 +145,8 @@ const OrderManagement = () => {
         <input
           placeholder="Tìm kiếm theo số điện thoại khách hàng ..."
           className="outline-none w-full text-sm text-light font-normal"
+          value={search} 
+          onChange={(e)=>setSearch(e.target.value)}
         />
       </div>
       <div className="mt-6 overflow-hidden overflow-x-auto">

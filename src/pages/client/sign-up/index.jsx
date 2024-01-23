@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { message, Checkbox } from "antd";
+import { message, Checkbox, Spin } from "antd";
 import { useAuth } from "@/provider/auth";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const SignUp = () => {
   const { onSignUp } = useAuth();
@@ -11,6 +12,7 @@ const SignUp = () => {
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [check, setCheck] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     if (!name) {
@@ -31,7 +33,7 @@ const SignUp = () => {
       message.warning("Mật khẩu là bắt buộc là bắt buộc");
       return false;
     }
-    if(!check) {
+    if (!check) {
       message.warning("Đồng ý với chính sách của chúng tôi");
       return false;
     }
@@ -44,6 +46,7 @@ const SignUp = () => {
       return;
     }
     try {
+      setLoading(true);
       const res = await onSignUp({ fullName: name, phone, address, password });
       if (res) {
         navigate("/");
@@ -51,6 +54,7 @@ const SignUp = () => {
     } catch (e) {
       message.error(e?.response?.data?.details || "Something error!");
     }
+    setLoading(false);
   };
 
   return (
@@ -121,7 +125,18 @@ const SignUp = () => {
               onClick={handleSubmit}
               className="mt-4 w-80 bg-[#FF0000] rounded-lg py-4 text-base text-white font-bold"
             >
-              Đăng kí
+              {!loading ? (
+                "Đăng kí"
+              ) : (
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      style={{ fontSize: 24, color: "white" }}
+                      spin
+                    />
+                  }
+                />
+              )}
             </button>
             <div className="mt-4 text-sm text-center">
               <span className="text-[#212B36] mr-1">Bạn đã có tài khoản</span>

@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/provider/auth";
 import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { message } from "antd";
+import { Spin, message } from "antd";
 import { Link } from "react-router-dom";
-import { api } from "@/provider/api";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ const SignIn = () => {
   const { getItem, setItem } = useLocalStorage();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     if (!phone) {
@@ -37,6 +38,7 @@ const SignIn = () => {
       return;
     }
     try {
+      setLoading(true);
       const res = await onLogin({ phone, password });
       if (res) {
         navigate("/");
@@ -44,6 +46,7 @@ const SignIn = () => {
     } catch (e) {
       message.error(e?.response?.data?.details || "Something error!");
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -102,7 +105,18 @@ const SignIn = () => {
                 onClick={handleSubmit}
                 className="mt-4 w-80 bg-[#FF0000] rounded-lg py-4 text-base text-white font-bold"
               >
-                Đăng nhập
+                {!loading ? (
+                  "Đăng nhập"
+                ) : (
+                  <Spin
+                    indicator={
+                      <LoadingOutlined
+                        style={{ fontSize: 24, color: "white" }}
+                        spin
+                      />
+                    }
+                  />
+                )}
               </button>
               <div className="mt-4 text-sm text-center">
                 <span className="text-[#212B36] mr-1">

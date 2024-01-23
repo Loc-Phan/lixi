@@ -5,6 +5,7 @@ import StyledModal from "@/components/styled-modal";
 import { api } from "@/provider/api";
 import AddTurnModal from "./AddTurnModal";
 import { useAuth } from "@/provider/auth";
+import { useDebounce } from 'use-debounce';
 
 const items = (item) => [
   {
@@ -56,7 +57,9 @@ const columns = (handleOpenModal) => [
       return (
         <div className="flex justify-between items-center min-w-24">
           <button
-            className={`text-xs bg-green16 font-bold py-1 px-2 rounded-[6px] ${item?.turns > 0 ? "text-light" : "text-success"}`}
+            className={`text-xs bg-green16 font-bold py-1 px-2 rounded-[6px] ${
+              item?.turns > 0 ? "text-light" : "text-success"
+            }`}
             onClick={() => handleOpenModal(item)}
             disabled={item?.turns > 0}
           >
@@ -94,14 +97,16 @@ const columns = (handleOpenModal) => [
 // ];
 
 const ClientManagement = () => {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [total,setTotal] = useState(0);
+  const [total, setTotal] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshData, setFreshData] = useState(new Date().getTime());
   const [selectedItem, setSelectedItem] = useState();
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+  const [debounceSearch] = useDebounce(search, 500);
 
   const handleOpenModal = (item) => {
     setIsModalOpen(true);
@@ -127,6 +132,7 @@ const ClientManagement = () => {
           ownerId: user?.ownerId,
           page,
           limit: pageSize,
+          phoneNumber: debounceSearch,
         };
         const res = await api.get("/bill-infos", { params: payload });
         if (res && res?.data) {
@@ -141,7 +147,7 @@ const ClientManagement = () => {
         console.log(e);
       }
     })();
-  }, [page, pageSize, refreshData, user?.ownerId]);
+  }, [page, pageSize, refreshData, user?.ownerId, debounceSearch]);
 
   return (
     <div className="w-full container md:pr-10 xl:pr-20">
@@ -164,6 +170,8 @@ const ClientManagement = () => {
         <input
           placeholder="Tìm kiếm theo số điện thoại khách hàng ..."
           className="outline-none w-full text-sm text-light font-normal"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
       </div>
       <div className="mt-6 overflow-hidden overflow-x-auto">
