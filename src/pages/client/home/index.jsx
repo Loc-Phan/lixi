@@ -14,6 +14,7 @@ const Home = () => {
   const [refreshData, setRefreshData] = useState(new Date().getTime());
   const [activeVoucher, setActiveVoucher] = useState();
   const { user, setUser } = useAuth();
+  const [activeEnvelopes, setActiveEnvelopes] = useState([]);
 
   const openEnvelope = async (id) => {
     try {
@@ -23,10 +24,12 @@ const Home = () => {
       };
       const res = await api.get(`/envelopes/${id}/open`, { params: payload });
       if (res) {
+        const active = activeEnvelopes?.filter((item) => item?.id !== id);
+        setActiveEnvelopes(active);
         setActiveVoucher(res?.data?.voucher);
         setUser(res?.data?.user);
         setIsModalOpen(true);
-        setRefreshData(new Date().getTime());
+        // setRefreshData(new Date().getTime());
       }
     } catch (e) {
       message.error(e?.response?.data?.details || "Something error!");
@@ -62,6 +65,11 @@ const Home = () => {
     setIsModalOpen(false);
   };
 
+  const handleSortEnvelopes = () => {
+    const sortEnvelopes = envelopes.sort(() => Math.random() - 0.5);
+    setActiveEnvelopes(sortEnvelopes);
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -73,23 +81,30 @@ const Home = () => {
         const res = await api.get("/envelopes", { params: payload });
         if (res && res?.data) {
           setEnvelopes(res?.data?.data);
+          setActiveEnvelopes(res?.data?.data);
         }
       } catch (e) {
         // message.error(e?.response?.data?.details || "Something error!");
       }
     })();
-  }, [refreshData, user?.ownerId]);
+  }, [user?.ownerId]);
 
   return (
     <div className="home">
       <div className="container pb-10 md:pb-0">
-        <div className="flex justify-end">
+        <div className="flex gap-4 items-center justify-end">
+          <button
+            className="rounded-lg bg-[#FFD600] py-2 px-4 text-sm text-[#FF0000] font-bold"
+            onClick={handleSortEnvelopes}
+          >
+            Xáo trộn bao lì xì
+          </button>
           <p className="text-sm font-semibold">{`Bạn còn ${
             user?.turns || 0
           } lượt mở`}</p>
         </div>
         <div className="mt-8 grid md:grid-cols-4 gap-y-6">
-          {envelopes.map((item, index) => (
+          {activeEnvelopes.map((item, index) => (
             <div key={item.id} className="flex justify-center">
               <div
                 className="cursor-pointer"

@@ -51,7 +51,8 @@ const MyEnvelope = () => {
   const [envelopes, setEnvelopes] = useState([]);
   const [openAddModal, setAddModal] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
+  const [total,setTotal] = useState(0);
   const [selectedItem, setSelectedItem] = useState();
   const navigate = useNavigate();
   const toDataURL = (url) => {
@@ -114,6 +115,7 @@ const MyEnvelope = () => {
             arr.push({ ...item?.envelope, ...item?.voucher, ...item });
           }
           setEnvelopes(arr);
+          setTotal(res?.data?.meta?.total);
         }
       } catch (e) {
         console.log(e);
@@ -142,7 +144,7 @@ const MyEnvelope = () => {
             <Table
               columns={columns(showModal)}
               dataSource={envelopes}
-              pagination={{ current: page, pageSize }}
+              pagination={{ current: page, pageSize, total }}
               onChange={handleTableChange}
             />
           </div>

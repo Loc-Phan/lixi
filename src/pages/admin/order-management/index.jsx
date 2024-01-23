@@ -1,5 +1,6 @@
 import StyledTable from "@/components/styled-table";
 import { api } from "@/provider/api";
+import { useAuth } from "@/provider/auth";
 import { Dropdown, Select, message } from "antd";
 import { useEffect, useState } from "react";
 
@@ -7,7 +8,7 @@ const columns = (onUpdateReward) => [
   {
     title: "ID",
     dataIndex: "id",
-    render: (value) => <div className="w-16 truncate">{value}</div>,
+    render: (value) => <div>{value}</div>,
   },
   {
     title: "Họ và Tên",
@@ -56,8 +57,10 @@ const columns = (onUpdateReward) => [
 ];
 
 const OrderManagement = () => {
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
+  const [total, setTotal] = useState(0);
   const [data, setData] = useState([]);
   const [refreshDate, setRefreshData] = useState(new Date().getTime());
 
@@ -80,11 +83,17 @@ const OrderManagement = () => {
     }
   };
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    const { current, pageSize } = pagination;
+    setPage(current);
+    setPageSize(pageSize);
+  };
+
   useEffect(() => {
     (async () => {
       try {
         const payload = {
-          ownerId: "659fccd03255fbf29b94584b",
+          ownerId: user?.ownerId,
           page,
           limit: pageSize,
         };
@@ -99,15 +108,17 @@ const OrderManagement = () => {
               fullName: item?.user?.fullName,
               phoneNumber: item?.user?.phoneNumber,
               name: item?.voucher?.name,
+              code: item?.voucher?.code,
             });
           }
           setData(arr);
+          setTotal(res?.data?.meta?.total);
         }
       } catch (e) {
         console.log(e);
       }
     })();
-  }, [page, pageSize, refreshDate]);
+  }, [page, pageSize, refreshDate, user?.ownerId]);
 
   return (
     <div className="w-full container md:pr-10 xl:pr-20">
@@ -133,7 +144,12 @@ const OrderManagement = () => {
         />
       </div>
       <div className="mt-6 overflow-hidden overflow-x-auto">
-        <StyledTable columns={columns(onUpdateReward)} dataSource={data} />
+        <StyledTable
+          columns={columns(onUpdateReward)}
+          dataSource={data}
+          pagination={{ current: page, pageSize, total }}
+          onChange={handleTableChange}
+        />
       </div>
     </div>
   );

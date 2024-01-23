@@ -31,15 +31,14 @@ const UserContainerWrapper = () => {
       axios
         .post(`${process.env.REACT_APP_API_URL}/auth/refresh`, {}, config)
         .then((res) => {
-          console.log(res);
           if (res && res?.accessToken) {
             setItem("token", res?.accessToken);
           } else {
-            navigate("/admin/sign-in");
+            navigate("/sign-in");
           }
         })
         .catch((e) => {
-          navigate("/admin/sign-in");
+          navigate("/sign-in");
         });
     }, GET_ACCESS_TOKEN_TIME);
     return () => {
@@ -123,9 +122,6 @@ const UserContainerWrapper = () => {
               </Link>
             </div>
             <div className="hidden md:flex gap-8">
-              {/* <button className="rounded-lg bg-[#FFD600] py-2 px-4 text-sm text-[#FF0000] font-bold">
-                Xáo trộn bao lì xì
-              </button> */}
               {!token ? (
                 <Link to="/sign-in">
                   <div className="rounded-lg bg-[#FF0000] py-2 px-4 text-sm text-white font-bold">

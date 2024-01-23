@@ -13,12 +13,11 @@ const columns = (handleOpenRemoveModal, handleOpenEditModal) => [
     dataIndex: "",
     key: "x",
     render: (item) => {
-      console.log(item);
       return (
-        <div className="flex gap-3 items-center w-24">
+        <div className="flex gap-3 items-center">
           <img
             alt="li-xi"
-            src={`${process.env.REACT_APP_API_URL}/files/${item?.image}`}
+            src={`${process.env.REACT_APP_API_URL}/files${item?.image}`}
             width={28}
             height={48}
           />
@@ -68,7 +67,8 @@ const EnvelopeManagement = () => {
   const [selectedItem, setSelectedItem] = useState();
   const [refreshData, setFreshData] = useState(new Date().getTime());
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
+  const [total,setTotal] = useState(0);
 
   const handleOpenRemoveModal = (item) => {
     setSelectedItem(item);
@@ -120,6 +120,7 @@ const EnvelopeManagement = () => {
         const res = await api.get("/envelopes", { params: payload });
         if (res && res?.data) {
           setEnvelopes(res?.data?.data);
+          setTotal(res?.data?.meta?.total);
         }
       } catch (e) {
         console.log(e);
@@ -150,7 +151,7 @@ const EnvelopeManagement = () => {
         <StyledTable
           columns={columns(handleOpenRemoveModal, handleOpenEditModal)}
           dataSource={envelopes}
-          pagination={{ current: page, pageSize }}
+          pagination={{ current: page, pageSize, total }}
           onChange={handleTableChange}
         />
       </div>

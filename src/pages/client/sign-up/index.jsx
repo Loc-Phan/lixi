@@ -31,6 +31,10 @@ const SignUp = () => {
       message.warning("Mật khẩu là bắt buộc là bắt buộc");
       return false;
     }
+    if(!check) {
+      message.warning("Đồng ý với chính sách của chúng tôi");
+      return false;
+    }
     return true;
   };
 

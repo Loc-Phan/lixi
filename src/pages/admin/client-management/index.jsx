@@ -6,14 +6,14 @@ import { api } from "@/provider/api";
 import AddTurnModal from "./AddTurnModal";
 import { useAuth } from "@/provider/auth";
 
-const items = [
+const items = (item) => [
   {
     key: "1",
     label: (
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href="https://www.antgroup.com"
+        href={`${process.env.REACT_APP_API_URL}/files${item?.image}`}
       >
         Xem hoá đơn
       </a>
@@ -25,7 +25,7 @@ const columns = (handleOpenModal) => [
   {
     title: "ID",
     dataIndex: "id",
-    render: (value) => <div className="w-16 truncate">{value}</div>,
+    render: (value) => <div className="truncate">{value}</div>,
   },
   {
     title: "Họ và Tên",
@@ -56,12 +56,13 @@ const columns = (handleOpenModal) => [
       return (
         <div className="flex justify-between items-center min-w-24">
           <button
-            className="text-xs text-success bg-green16 font-bold py-1 px-2 rounded-[6px]"
+            className={`text-xs bg-green16 font-bold py-1 px-2 rounded-[6px] ${item?.turns > 0 ? "text-light" : "text-success"}`}
             onClick={() => handleOpenModal(item)}
+            disabled={item?.turns > 0}
           >
             Thêm lượt
           </button>
-          <Dropdown menu={{ items }} placement="topLeft">
+          <Dropdown menu={{ items: items(item) }} placement="topLeft">
             <img
               alt="search-icon"
               src="/imgs/admin/three-dot.svg"
@@ -96,6 +97,7 @@ const ClientManagement = () => {
   const {user} = useAuth();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [total,setTotal] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshData, setFreshData] = useState(new Date().getTime());
   const [selectedItem, setSelectedItem] = useState();
@@ -133,12 +135,13 @@ const ClientManagement = () => {
             arr.push({ ...item?.user, ...item });
           }
           setData(arr);
+          setTotal(res?.data?.meta?.total);
         }
       } catch (e) {
         console.log(e);
       }
     })();
-  }, [page, pageSize, refreshData]);
+  }, [page, pageSize, refreshData, user?.ownerId]);
 
   return (
     <div className="w-full container md:pr-10 xl:pr-20">
@@ -167,7 +170,7 @@ const ClientManagement = () => {
         <StyledTable
           columns={columns(handleOpenModal)}
           dataSource={data}
-          pagination={{ current: page, pageSize }}
+          pagination={{ current: page, pageSize, total }}
           onChange={handleTableChange}
         />
       </div>

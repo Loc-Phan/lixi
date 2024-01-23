@@ -11,7 +11,10 @@ const EditEnvelope = ({
   setFreshData,
 }) => {
   const [name, setName] = useState(selectedItem?.name || "");
-  const [image, setImage] = useState(selectedItem || null);
+  const [image, setImage] = useState(selectedItem?.image || null);
+  console.log(selectedItem);
+
+  console.log("image",image)
   const { user } = useAuth();
   const preventDefault = (event) => {
     event.preventDefault();
@@ -87,13 +90,13 @@ const EditEnvelope = ({
     }
   };
 
-  useEffect(() => {
-    return () => {
-      handeDeleteFile()
-        .then((res) => {})
-        .catch(() => {});
-    };
-  }, [isOpenEdit]);
+  // useEffect(() => {
+  //   return () => {
+  //     handeDeleteFile()
+  //       .then((res) => {})
+  //       .catch(() => {});
+  //   };
+  // }, [isOpenEdit]);
 
   return (
     <StyledModal
@@ -153,11 +156,11 @@ const EditEnvelope = ({
             ></input>
           </label>
         </div>
-        {(selectedItem?.image || image) && (
+        {image && (
           <div className="mt-4">
             <div className="relative w-fit rounded-lg overflow-hidden">
               <img
-                src={`${process.env.REACT_APP_API_URL}/files/${image}`}
+                src={`${process.env.REACT_APP_API_URL}/files${image}`}
                 alt="upload"
                 width={72}
                 height={72}

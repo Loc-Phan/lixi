@@ -158,7 +158,6 @@ const ContainerWrapper = () => {
       axios
         .post(`${process.env.REACT_APP_API_URL}/auth/refresh`, {}, config)
         .then((res) => {
-          console.log(res);
           if (res && res?.accessToken) {
             setItem("token", res?.accessToken);
           } else {

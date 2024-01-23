@@ -14,14 +14,14 @@ const columns = (handleOpenModal, handleOpenEditModal) => [
     render: (item) => {
       console.log(item);
       return (
-        <div className="flex gap-3 items-center w-24">
+        <div className="flex gap-3 items-cente">
           <img
             alt="li-xi"
-            src={`${process.env.REACT_APP_API_URL}/files/${item?.image}`}
+            src={`${process.env.REACT_APP_API_URL}/files${item?.image}`}
             width={28}
             height={48}
           />
-          <p className="truncate">{item?.id || ""}</p>
+          <p className="truncate">{item?.code || ""}</p>
         </div>
       );
     },
@@ -68,7 +68,9 @@ const VoucherManagement = () => {
   const [vouchers, setVouchers] = useState([]);
   const [refreshData, setFreshData] = useState(new Date().getTime());
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
+  const [total, setTotal] = useState(0);
+
 
   const handleOpenModal = (item) => {
     setIsModalOpen(true);
@@ -118,6 +120,7 @@ const VoucherManagement = () => {
         const res = await api.get("/vouchers", { params: payload });
         if (res && res?.data) {
           setVouchers(res?.data?.data);
+          setTotal(res?.data?.meta?.total);
         }
       } catch (e) {
         console.log(e);
@@ -148,7 +151,7 @@ const VoucherManagement = () => {
         <StyledTable
           columns={columns(handleOpenModal, handleOpenEditModal)}
           dataSource={vouchers}
-          pagination={{ current: page, pageSize }}
+          pagination={{ current: page, pageSize, total }}
           onChange={handleTableChange}
         />
       </div>

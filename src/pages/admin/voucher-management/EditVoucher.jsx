@@ -15,7 +15,7 @@ const EditVoucher = ({
   const [total, setTotal] = useState(selectedItem?.total || 0);
   const [code, setCode] = useState(selectedItem?.code || "");
   const [name, setName] = useState(selectedItem?.name || "");
-  const [image, setImage] = useState(selectedItem?.image?.data || null);
+  const [image, setImage] = useState(selectedItem?.image || null);
   const preventDefault = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -84,13 +84,13 @@ const EditVoucher = ({
     }
   };
 
-  useEffect(() => {
-    return () => {
-      handeDeleteFile()
-        .then((res) => {})
-        .catch(() => {});
-    };
-  }, [isOpenEdit]);
+  // useEffect(() => {
+  //   return () => {
+  //     handeDeleteFile()
+  //       .then((res) => {})
+  //       .catch(() => {});
+  //   };
+  // }, [isOpenEdit]);
 
   return (
     <StyledModal
@@ -162,11 +162,11 @@ const EditVoucher = ({
             ></input>
           </label>
         </div>
-        {(selectedItem?.image || image) && (
+        {image && (
           <div className="mt-4">
             <div className="relative w-fit rounded-lg overflow-hidden">
               <img
-                src={`${process.env.REACT_APP_API_URL}/files/${image}`}
+                src={`${process.env.REACT_APP_API_URL}/files${image}`}
                 alt="upload"
                 width={72}
                 height={72}

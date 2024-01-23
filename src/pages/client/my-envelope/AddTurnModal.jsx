@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const AddTurnModal = ({ openAddModal, handleCloseModal }) => {
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const preventDefault = (event) => {
     event.preventDefault();
@@ -14,7 +14,7 @@ const AddTurnModal = ({ openAddModal, handleCloseModal }) => {
   };
   const handleDrop = async (e) => {
     const form = new FormData();
-    form.append("path", "images/vouchers");
+    form.append("path", "images/bill-infos");
     form.append("image", e.target.files[0]);
     const res = await api.post("/files", form, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -60,13 +60,13 @@ const AddTurnModal = ({ openAddModal, handleCloseModal }) => {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      handeDeleteFile()
-        .then((res) => {})
-        .catch(() => {});
-    };
-  }, [openAddModal]);
+  // useEffect(() => {
+  //   return () => {
+  //     handeDeleteFile()
+  //       .then((res) => {})
+  //       .catch(() => {});
+  //   };
+  // }, [openAddModal]);
 
   return (
     <StyledModal
